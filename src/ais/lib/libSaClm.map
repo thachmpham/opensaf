@@ -1,0 +1,10 @@
+# Version and symbol export for libSaClm.so
+
+{
+	global:
+		saAis*;
+		saClm*;
+
+	local:
+		*;
+};

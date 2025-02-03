@@ -1,0 +1,10 @@
+# Version and symbol export for libSaMsg.so
+
+{
+	global:
+		saAis*;
+		saMsg*;
+
+	local:
+		*;
+};

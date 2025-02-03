@@ -1,0 +1,10 @@
+# Version and symbol export for libSaEvt.so
+
+{
+	global:
+		saAis*;
+		saEvt*;
+
+	local:
+		*;
+};

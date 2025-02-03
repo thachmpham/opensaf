@@ -1,0 +1,153 @@
+#! /bin/sh
+#      -*- OpenSAF  -*-
+#
+# Copyright (C) 2017, Oracle and/or its affiliates. All rights reserved.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. This file and program are licensed
+# under the GNU Lesser General Public License Version 2.1, February 1999.
+# The complete license can be accessed from the following location:
+# http://opensource.org/licenses/lgpl-license.php
+# See the Copying file included with the OpenSAF distribution for full
+# licensing terms.
+#
+
+usage()
+{
+  echo ""
+  echo "USAGE: $(basename "$0") [-t value] <-o op_name> [-a action_name]  <DN>"
+  echo ""
+  echo "OPTIONS:"
+  echo "        -t or --timeout : command timeout in seconds (default=60) (optional)"
+  echo "        -o or --admin-op: operation name (mandatory)"
+  echo "                             'lock'     for admin lock "
+  echo "                             'unlock'   for admin unlock "
+  echo "                             'shutdown' for admin shutdown "
+  echo "                             'reset'    for admin reset of node/cluster"
+  echo "                             'execute'  for executing action on remote node/cluster"
+  echo "        -a or --action  : action name is a script stored in /usr/lib/opensaf/clm-scripts"
+  echo "                          directory started with prefix "osafclm_""
+  echo "        DN              : a valid DN name of CLM node or cluster (mandatory)"
+  echo ""
+  echo ""
+  echo "NOTES:"
+  echo "        1) -a is only mandatory with 'execute' operation"
+  echo ""
+  echo ""
+  echo "EXAMPLES:"
+  echo "        clm-adm -o execute -a test safNode=SC-2,safCluster=myClmCluster"
+  echo "                execute script locate on /usr/lib/opensaf/clm-scripts/osafclm_test on SC-2"
+  echo "        clm-adm -o reset safCluster=myClmCluster"
+  echo "                Cluster reboot"
+  echo "        clm-adm -o reset safNode=SC-2,safCluster=myClmCluster"
+  echo "                Node SC-2 reboot"
+  echo ""
+  echo ""
+}
+
+options=$(getopt -o t:o:a:h -l timeout:,admin-op:,action:,help -- "$@")
+status=$?
+info="Try '$(basename "$0") -h or --help' for more information"
+if [ $status -ne 0 ] ; then
+  echo $info
+  exit 1
+fi
+eval set -- "$options"
+
+DN=""
+CMD=""
+TIMEOUT=""
+ACTION=""
+OPERATION=""
+
+while true; do
+  case $1 in
+    -t|--timeout)
+                shift 1
+                TIMEOUT=$1;
+                shift 1
+                ;;
+    -o|--admin-op)
+                shift 1
+                OPERATION=$1
+                if [ "$1" = "unlock" ]; then
+                  CMD=1
+                elif [ "$1" = "lock" ]; then
+                  CMD=2
+                elif [ "$1" = "shutdown" ]; then
+                  CMD=3
+                elif [ "$1" = "reset" ]; then
+                  CMD=4
+                elif [ "$1" = "execute" ]; then
+                  CMD=5
+                else
+                  echo "Invalid operation name"
+                  exit 1
+                fi
+                shift 1
+                    ;;
+    -a|--action)
+                shift 1
+                ACTION=$1
+                shift 1
+                    ;;
+    -h|--help)
+                usage
+                exit 0
+                ;;
+    \?)
+                echo "Invalid option"
+                exit 1
+                ;;
+    --)
+                shift;
+                break;
+                ;;
+    esac
+done
+
+if [ "$CMD" = "" ]; then
+  echo "operation name is mandatory"
+  echo $info
+  exit 1
+fi
+
+if [ "$CMD" = "5" ] && [ "$ACTION" = "" ]; then
+  echo "action name is mandatory in 'execute' operation"
+  echo $info
+  exit 1
+fi
+
+if [ "$CMD" != "5" ] && [ "$ACTION" != "" ]; then
+  echo "-a option is redundant in '$OPERATION' operation"
+  echo $info
+  exit 1
+fi
+
+shift $((OPTIND -1))
+
+DN="$*"
+
+if [ "$DN" = "" ]; then
+  echo "DN name is mandatory"
+  echo $info
+  exit 1
+fi
+
+if [ "$TIMEOUT" = "" ]; then
+  if [ "$ACTION" != "" ]; then
+    immadm -o "$CMD" -p "saClmAction:SA_STRING_T:$ACTION" "$DN"
+  else
+    immadm -o "$CMD" "$DN"
+  fi
+else
+  if [ "$ACTION" != "" ]; then
+    immadm -t "$TIMEOUT" -o "$CMD" -p "saClmAction:SA_STRING_T:$ACTION" "$DN"
+  else
+    immadm -t "$TIMEOUT" -o "$CMD"  "$DN"
+  fi
+fi
+
+exit $?
+

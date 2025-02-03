@@ -1,0 +1,10 @@
+# Version and symbol export for libSaLog.so
+
+{
+	global:
+		saAis*;
+		saLog*;
+
+	local:
+		*;
+};
