@@ -18,6 +18,7 @@
 #include <set>
 #include <algorithm>
 #include <time.h>
+#include <cstdint>
 
 #include "imm/immnd/ImmModel.h"
 #include "imm/immnd/ImmAttrValue.h"
