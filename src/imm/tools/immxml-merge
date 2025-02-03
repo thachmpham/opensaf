@@ -314,7 +314,7 @@ class MergedImmDocument(BaseImmDocument):
             self.imm_content_element.appendChild(object_element_tuple[1][1])
         
         tmpOutputFilename = Options.outputFilename+".tmp"
-        file_object = open(tmpOutputFilename, "w")
+        file_object = open(tmpOutputFilename, "wb")
             
         ## FIX for minidom problem with lost encoding info in saved xml document
         trace("encoding in first source xml document:%s", self.firstSourceDoc.encoding)
@@ -361,8 +361,8 @@ class MergedImmDocument(BaseImmDocument):
 
 
 def printUsage():
-  print "usage: immxml-merge [options] filename[s]"
-  print """
+  print("usage: immxml-merge [options] filename[s]")
+  print("""
   -o, --output            specified outputfile 
                           (if option is omitted stdout is used)
   --grep-class PATTERN    pattern match the class names in source file(s)
@@ -397,10 +397,10 @@ def printUsage():
   -h, --help              display this help and exit
  
    See http://devel.opensaf.org/ for information and updates.
-"""
+""")
  
 def printVersion():
-  print "immxml-merge version 0.5.1"
+  print("immxml-merge version 0.5.1")
 
 
 
@@ -408,7 +408,7 @@ def printVersion():
 def main(argv):    
     try:
         opts, args = getopt.getopt(argv, "thvso:", ["trace", "keep-comment-elements", "ignore-variants", "ignore-missing-class", "help", "version", "sort", "grep-class=", "grep-v-class=", "grep-dn=", "grep-v-dn=", "output=", "schema="])
-    except getopt.GetoptError, err:
+    except (getopt.GetoptError, err):
         # print help information and exit:
         print_info_stderr("%s", str(err))
         printUsage()

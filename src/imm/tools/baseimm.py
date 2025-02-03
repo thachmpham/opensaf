@@ -89,7 +89,7 @@ class BaseImmDocument:
             line = f.readline()
             if len(line) == 0:
                 break
-            print line, # notice comma
+            print(line) # notice comma
         f.close()
         # remove temp file
         trace("delete the stdout tmp file: %s", tempfile)
@@ -154,7 +154,7 @@ def trace(*args):
             printf_args.append(args[i])
     
         formatStr = "TRACE:\t" + args[0]
-        print >> sys.stderr, formatStr % tuple(printf_args)
+        print(formatStr % tuple(printf_args), file=sys.stderr)
 
 
 def retrieveFilenames(args):
@@ -177,7 +177,7 @@ def print_info_stderr(*args):
         printf_args.append(args[i])
     
     formatStr = args[0]
-    print >> sys.stderr, formatStr % tuple(printf_args)
+    print(formatStr % tuple(printf_args), file=sys.stderr)
     
 
 def abort_script(*args):
@@ -186,7 +186,7 @@ def abort_script(*args):
         printf_args.append(args[i])
     
     formatStr = "\nAborting script: " + args[0]
-    print >> sys.stderr, formatStr % tuple(printf_args)
+    print(formatStr % tuple(printf_args), file=sys.stderr)
     sys.exit(2)
 
 def exit_script(*args):
@@ -195,7 +195,7 @@ def exit_script(*args):
         printf_args.append(args[i])
     
     formatStr = "\n" + args[0]
-    print >> sys.stderr, formatStr % tuple(printf_args)
+    print(formatStr % tuple(printf_args), file=sys.stderr)
     sys.exit(0)    
 
 def verifyInputFileReadAcess(filename):

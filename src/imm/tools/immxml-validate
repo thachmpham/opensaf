@@ -192,7 +192,7 @@ class ImmDocument(BaseImmDocument):
             printf_args.append(args[i])
         
         formatStr = "\nValidation failed: " + args[0]
-        print >> sys.stderr, formatStr % tuple(printf_args)
+        print(formatStr % tuple(printf_args), file=sys.stderr)
         #sys.exit(2)
         # no more exit, set failedFlag True
         self.validateFailed = True
@@ -352,8 +352,8 @@ class ImmDocument(BaseImmDocument):
 #### end of class ImmDocument
 
 def printUsage():
-  print "usage: immxml-validate [options] filename[s]"
-  print """
+  print("usage: immxml-validate [options] filename[s]")
+  print("""
       --schema            validate inputfiles with the supplied
                           xsd schema file
   -t, --trace             print trace information to stderr
@@ -369,17 +369,17 @@ def printUsage():
   -h, --help              display this help and exit
  
    See http://devel.opensaf.org/ for information and updates.
-"""
+""")
  
 def printVersion():
-  print "immxml-validate version 0.5.1"
+  print("immxml-validate version 0.5.1")
 
 
 
 def main(argv):    
     try:
         opts, args = getopt.getopt(argv, "thvso", ["trace", "help", "version", "schema=", "ignore-attribute-refs", "ignore-rdn-association-refs"])
-    except getopt.GetoptError, err:
+    except (getopt.GetoptError, err):
         # print help information and exit:
         print_info_stderr("%s", str(err))
         printUsage()
